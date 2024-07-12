@@ -26,7 +26,7 @@ function addCardAll() {
     addCard(initialCards[i].name, initialCards[i].link);
   }
 }
-addCardAll();
+addCardAll(deleteCard);
 
 // @todo: DOM узлы
 
