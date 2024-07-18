@@ -1,3 +1,17 @@
+console.log('Hello, World!');
+
+// index.js
+
+import './index.css'; // добавьте импорт главного файла стилей
+import { initialCards } from './cards';
+
+const numbers = [2, 3, 5];
+
+// Стрелочная функция. Не запнётся ли на ней Internet Explorer?
+const doubledNumbers = numbers.map((number) => number * 2);
+
+console.log(doubledNumbers); // 4, 6, 10
+
 const mainContent = document.querySelector('.content');
 // @todo: Темплейт карточки
 const cardPlace = mainContent.querySelector('.places__list');
