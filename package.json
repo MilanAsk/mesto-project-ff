@@ -4,7 +4,7 @@
   "description": "https://github.com/MilanAsk/mesto-project-ff.git",
   "main": "index.js",
   "scripts": {
-    "build": "rd /s /q dist && webpack --mode production",
+    "build": "webpack --mode production",
     "dev": "webpack serve"
   },
   "author": "Milan Askerov",
