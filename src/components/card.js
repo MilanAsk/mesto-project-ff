@@ -1,6 +1,5 @@
-import { initialCards } from '../cards';
-import { cardPlace, popupImage } from '../index';
-import { openPopup, closePopup } from './modal';
+import { popupImage } from '../index';
+import { openPopup } from './modal';
 
 function deleteCard(event) {
   event.stopPropagation();
@@ -32,7 +31,8 @@ function addCardEvents(cardNode, cardImage, imageLink, titleText) {
   });
 }
 
-function createCard(cardData) {
+function createCard(cardData, deleteCard, likeCard) {
+  // поясните, пожалуйста, зачем это нужно? или я неправильно понял Ваше замечание
   const cardTemplate = document.querySelector('#card-template').content;
   const cardNode = cardTemplate.querySelector('.places__item.card').cloneNode(true);
   const titleNode = cardNode.querySelector('.card__title');
@@ -49,15 +49,4 @@ function createCard(cardData) {
   return cardNode;
 }
 
-function renderCards() {
-  const container = document.createDocumentFragment();
-
-  initialCards.forEach((element) => {
-    const card = createCard(element);
-    container.append(card);
-  });
-
-  cardPlace.append(container);
-}
-
-export { deleteCard, likeCard, addCardEvents, createCard, renderCards };
+export { deleteCard, likeCard, addCardEvents, createCard };

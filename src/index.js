@@ -1,19 +1,21 @@
-console.log('Hello, World!');
-
-// index.js
-
-import './index.css'; // добавьте импорт главного файла стилей
-import { deleteCard, likeCard, addCardEvents, createCard, renderCards } from './components/card';
-import {
-  openPopup,
-  closePopup,
-  keyClose,
-  handleFormSubmit,
-  addCardSubmit,
-} from './components/modal';
+import './index.css';
+import { initialCards } from './cards';
+import { createCard } from './components/card';
+import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 
 const mainContent = document.querySelector('.content');
 const cardPlace = mainContent.querySelector('.places__list');
+
+function renderCards() {
+  const container = document.createDocumentFragment();
+
+  initialCards.forEach((element) => {
+    const card = createCard(element);
+    container.append(card);
+  });
+
+  cardPlace.append(container);
+}
 
 renderCards();
 
@@ -40,31 +42,51 @@ addCardButton.addEventListener('click', () => {
   openPopup(popupNewCard);
 });
 
-popupEditProfile.addEventListener('click', (evt) => {
-  if (evt.currentTarget === evt.target) {
-    closePopup(popupEditProfile);
-  }
-});
+popupEditProfile.addEventListener('click', closePopupByOverlay);
+popupNewCard.addEventListener('click', closePopupByOverlay);
 
-popupNewCard.addEventListener('click', (evt) => {
-  if (evt.currentTarget === evt.target) {
-    closePopup(popupNewCard);
-  }
-});
-
-popupImage.addEventListener('click', (evt) => {
-  if (evt.currentTarget === evt.target) {
-    closePopup(popupImage);
-  }
-});
+popupImage.addEventListener('click', closePopupByOverlay);
 
 // Формы
 const formEditProfile = document.forms['edit-profile'];
 const formAddCard = document.forms['new-place'];
 
 // Слушатели форм
-formEditProfile.addEventListener('submit', handleFormSubmit);
+formEditProfile.addEventListener('submit', editProfileSubmit);
 formAddCard.addEventListener('submit', addCardSubmit);
+
+function editProfileSubmit(evt) {
+  evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+
+  const nameInput = formEditProfile.elements.name;
+  const jobInput = formEditProfile.elements.description;
+  const profileTitle = mainContent.querySelector('.profile__title');
+  const profileDescription = mainContent.querySelector('.profile__description');
+
+  profileTitle.textContent = nameInput.value;
+  profileDescription.textContent = jobInput.value;
+
+  closePopup(popupEditProfile);
+}
+
+function addCardSubmit(evt) {
+  evt.preventDefault();
+
+  const titleInput = formAddCard.elements['place-name'];
+  const linkInput = formAddCard.elements.link;
+
+  evt = {
+    name: titleInput.value,
+    link: linkInput.value,
+  };
+
+  const newCard = createCard(evt);
+
+  cardPlace.prepend(newCard);
+
+  closePopup(popupNewCard);
+  formAddCard.reset();
+}
 
 export {
   mainContent,
