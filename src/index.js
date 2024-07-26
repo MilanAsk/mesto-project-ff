@@ -6,6 +6,14 @@ import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 const mainContent = document.querySelector('.content');
 const cardPlace = mainContent.querySelector('.places__list');
 
+const openPopupImage = (imageLink, titleText) => {
+  const popupImageUrl = popupImage.querySelector('.popup__image');
+  const popupImageText = popupImage.querySelector('.popup__caption');
+  popupImageUrl.src = imageLink;
+  popupImageText.textContent = titleText;
+  openPopup(popupImage);
+};
+
 function renderCards() {
   const container = document.createDocumentFragment();
 
@@ -23,6 +31,7 @@ renderCards();
 const popupEditProfile = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
+const closeButton = document.querySelector('.popup__close');
 
 // Анимация открытия модалок
 popupEditProfile.classList.add('popup_is-animated');
@@ -36,6 +45,8 @@ const addCardButton = mainContent.querySelector('.profile__add-button');
 //Слушатели модалок
 editProfileButton.addEventListener('click', () => {
   openPopup(popupEditProfile);
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
 });
 
 addCardButton.addEventListener('click', () => {
@@ -55,13 +66,13 @@ const formAddCard = document.forms['new-place'];
 formEditProfile.addEventListener('submit', editProfileSubmit);
 formAddCard.addEventListener('submit', addCardSubmit);
 
-function editProfileSubmit(evt) {
-  evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+const nameInput = formEditProfile.elements.name;
+const jobInput = formEditProfile.elements.description;
+const profileTitle = mainContent.querySelector('.profile__title');
+const profileDescription = mainContent.querySelector('.profile__description');
 
-  const nameInput = formEditProfile.elements.name;
-  const jobInput = formEditProfile.elements.description;
-  const profileTitle = mainContent.querySelector('.profile__title');
-  const profileDescription = mainContent.querySelector('.profile__description');
+function editProfileSubmit(evt) {
+  evt.preventDefault();
 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
@@ -89,6 +100,7 @@ function addCardSubmit(evt) {
 }
 
 export {
+  closeButton,
   mainContent,
   cardPlace,
   popupImage,
@@ -96,4 +108,5 @@ export {
   formEditProfile,
   popupEditProfile,
   popupNewCard,
+  openPopupImage,
 };

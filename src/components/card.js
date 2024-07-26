@@ -1,5 +1,4 @@
-import { popupImage } from '../index';
-import { openPopup } from './modal';
+import { openPopupImage, closeButton } from '../index';
 
 function deleteCard(event) {
   event.stopPropagation();
@@ -14,6 +13,11 @@ function likeCard(evt) {
 }
 
 function addCardEvents(cardNode, cardImage, imageLink, titleText) {
+  // я вроде все понял, кроме этого, я передал аргументом в addCard,
+  // а тут я не могу, потому что появляется ошибка что это не функции
+  // все остальные моменты понял и исправил, но вот с замыканием не понимаю
+  // представляю каким тупым я выгляжу :(
+
   const deleteButton = cardNode.querySelector('.card__delete-button');
   const likeButton = cardNode.querySelector('.card__like-button');
 
@@ -21,18 +25,10 @@ function addCardEvents(cardNode, cardImage, imageLink, titleText) {
   likeButton.addEventListener('click', likeCard);
 
   cardImage.addEventListener('click', () => {
-    const popupImageUrl = popupImage.querySelector('.popup__image');
-    const popupImageText = popupImage.querySelector('.popup__caption');
-
-    popupImageUrl.src = imageLink;
-    popupImageText.textContent = titleText;
-
-    openPopup(popupImage);
+    openPopupImage(imageLink, titleText);
   });
 }
-
-function createCard(cardData, deleteCard, likeCard) {
-  // поясните, пожалуйста, зачем это нужно? или я неправильно понял Ваше замечание
+function createCard(cardData, deleteCard, likeCard, openPopupImage) {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardNode = cardTemplate.querySelector('.places__item.card').cloneNode(true);
   const titleNode = cardNode.querySelector('.card__title');
@@ -49,4 +45,4 @@ function createCard(cardData, deleteCard, likeCard) {
   return cardNode;
 }
 
-export { deleteCard, likeCard, addCardEvents, createCard };
+export { createCard };
