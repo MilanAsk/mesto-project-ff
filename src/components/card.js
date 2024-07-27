@@ -1,5 +1,3 @@
-import { openPopupImage, closeButton } from '../index';
-
 function deleteCard(event) {
   event.stopPropagation();
 
@@ -12,12 +10,15 @@ function likeCard(evt) {
   evt.target.classList.toggle('card__like-button_is-active');
 }
 
-function addCardEvents(cardNode, cardImage, imageLink, titleText) {
-  // я вроде все понял, кроме этого, я передал аргументом в addCard,
-  // а тут я не могу, потому что появляется ошибка что это не функции
-  // все остальные моменты понял и исправил, но вот с замыканием не понимаю
-  // представляю каким тупым я выгляжу :(
-
+function addCardEvents(
+  cardNode,
+  cardImage,
+  imageLink,
+  titleText,
+  deleteCard,
+  likeCard,
+  openPopupImage
+) {
   const deleteButton = cardNode.querySelector('.card__delete-button');
   const likeButton = cardNode.querySelector('.card__like-button');
 
@@ -40,9 +41,9 @@ function createCard(cardData, deleteCard, likeCard, openPopupImage) {
   cardImage.src = imageLink;
   cardImage.alt = titleText;
 
-  addCardEvents(cardNode, cardImage, imageLink, titleText);
+  addCardEvents(cardNode, cardImage, imageLink, titleText, deleteCard, likeCard, openPopupImage);
 
   return cardNode;
 }
 
-export { createCard };
+export { createCard, deleteCard, likeCard };

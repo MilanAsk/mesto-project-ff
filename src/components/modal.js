@@ -10,14 +10,12 @@ const keyClose = (evt) => {
 function openPopup(popup) {
   popup.classList.add('popup_is-opened');
 
-  closeButton.addEventListener('click', closePopupByOverlay);
   document.addEventListener('keydown', keyClose);
 }
 
 function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
 
-  closeButton.removeEventListener('click', closePopupByOverlay);
   document.removeEventListener('keydown', keyClose);
 }
 

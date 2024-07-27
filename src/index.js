@@ -1,6 +1,6 @@
 import './index.css';
 import { initialCards } from './cards';
-import { createCard } from './components/card';
+import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 
 const mainContent = document.querySelector('.content');
@@ -18,7 +18,7 @@ function renderCards() {
   const container = document.createDocumentFragment();
 
   initialCards.forEach((element) => {
-    const card = createCard(element);
+    const card = createCard(element, deleteCard, likeCard, openPopupImage);
     container.append(card);
   });
 
@@ -86,12 +86,12 @@ function addCardSubmit(evt) {
   const titleInput = formAddCard.elements['place-name'];
   const linkInput = formAddCard.elements.link;
 
-  evt = {
+  const cardData = {
     name: titleInput.value,
     link: linkInput.value,
   };
 
-  const newCard = createCard(evt);
+  const newCard = createCard(cardData, deleteCard, likeCard, openPopupImage);
 
   cardPlace.prepend(newCard);
 
@@ -110,3 +110,4 @@ export {
   popupNewCard,
   openPopupImage,
 };
+// спасибо Вам большое, многим ревьюерам поучиться бы Вашей отзывчивости и желанию помочь
