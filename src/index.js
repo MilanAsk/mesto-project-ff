@@ -98,16 +98,3 @@ function addCardSubmit(evt) {
   closePopup(popupNewCard);
   formAddCard.reset();
 }
-
-export {
-  closeButton,
-  mainContent,
-  cardPlace,
-  popupImage,
-  formAddCard,
-  formEditProfile,
-  popupEditProfile,
-  popupNewCard,
-  openPopupImage,
-};
-// спасибо Вам большое, многим ревьюерам поучиться бы Вашей отзывчивости и желанию помочь

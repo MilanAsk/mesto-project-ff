@@ -1,5 +1,3 @@
-import { closeButton } from '../index';
-
 const keyClose = (evt) => {
   if (evt.key === 'Escape') {
     const openedPopup = document.querySelector('.popup_is-opened');
