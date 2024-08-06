@@ -45,6 +45,9 @@
               name="name"
               class="popup__input popup__input_type_name"
               placeholder="Имя"
+              id="name-input"
+              pattern="[a-zA-Zа-яА-ЯеЁ\s\-]+"
+              data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
               minlength="2"
               maxlength="40"
               required />
@@ -53,6 +56,9 @@
               name="description"
               class="popup__input popup__input_type_description"
               placeholder="Занятие"
+              id="description-input"
+              pattern="[a-zA-Zа-яА-ЯеЁ\s\-]+"
+              data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
               minlength="2"
               maxlength="40"
               required />
