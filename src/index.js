@@ -158,11 +158,13 @@ const jobInput = formEditProfile.elements.description;
 const profileTitle = mainContent.querySelector('.profile__title');
 const profileDescription = mainContent.querySelector('.profile__description');
 
-// Сохранение изменений в профиле
-const saveUserInfo = (nameData, aboutData) => {
-  fetch(`${config.baseUrl}/users/me`, {
+const fetchWrapper = (path, config) => {
+  return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...config });
+};
+
+const newSaveUserInfo = (nameData, aboutData) => {
+  fetchWrapper(`/users/me`, {
     method: 'PATCH',
-    headers: config.headers,
     body: JSON.stringify({
       name: nameData,
       about: aboutData,
@@ -170,13 +172,25 @@ const saveUserInfo = (nameData, aboutData) => {
   }).then(checkRes);
 };
 
+// Сохранение изменений в профиле
+// const saveUserInfo = (nameData, aboutData) => {
+//   fetch(`${config.baseUrl}/users/me`, {
+//     method: 'PATCH',
+//     headers: config.headers,
+//     body: JSON.stringify({
+//       name: nameData,
+//       about: aboutData,
+//     }),
+//   }).then(checkRes);
+// };
+
 function editProfileSubmit(evt) {
   evt.preventDefault();
 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
 
-  saveUserInfo(profileTitle.textContent, profileDescription.textContent);
+  newSaveUserInfo(profileTitle.textContent, profileDescription.textContent);
 
   closePopup(popupEditProfile);
 }
@@ -215,17 +229,29 @@ function addCardSubmit(evt) {
   clearValidation(popupNewCard, validationConfig);
 }
 
+const saveNewAvatar = (url) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      avatar: url,
+    }),
+    headers: config.headers,
+  })
+    .then(checkRes)
+    .then((data) => {
+      console.log(data);
+    });
+};
+
 function editAvatarSubmit(evt) {
   evt.preventDefault();
 
-  const inputUrl = formEditAvatar.elements.link;
+  const inputUrl = formEditAvatar.elements.link.value;
 
-  editAvatarButton.style.cssText = `background-image: url("${inputUrl}"); border: 1px solid red`;
+  editAvatarButton.style.cssText = `background-image: url("${inputUrl}");`;
 
-  console.log(editAvatarButton.style.cssText);
+  saveNewAvatar(inputUrl);
 
-  console.log(editAvatarButton);
-  console.log(inputUrl.value);
   closePopup(popupEditAvatar);
   formEditAvatar.reset();
 }
