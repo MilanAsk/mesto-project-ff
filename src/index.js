@@ -1,8 +1,8 @@
 import './index.css';
-import { initialCards } from './cards';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
+import { getUserInfo, getCards, config, postCard, saveNewAvatar } from './components/api';
 
 const mainContent = document.querySelector('.content');
 const cardPlace = mainContent.querySelector('.places__list');
@@ -12,65 +12,7 @@ const openPopupImage = (imageLink, titleText) => {
   const popupImageText = popupImage.querySelector('.popup__caption');
   popupImageUrl.src = imageLink;
   popupImageText.textContent = titleText;
-  openPopup(popupImage);
-};
-
-const config = {
-  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-19',
-  headers: {
-    authorization: 'b1fc73a0-b339-4f23-8bc6-4511c8e7234e',
-    'Content-Type': 'application/json',
-  },
-};
-
-export const getInitialCards = () => {
-  return fetch(`${config.baseUrl}/cards`, {
-    headers: config.headers,
-  }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-
-    // если ошибка, отклоняем промис
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
-};
-
-const checkRes = (res) => {
-  if (res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Ошибка: ${res.status}`);
-};
-
-// GET профиля
-const getUserInfo = () => {
-  return fetch(`${config.baseUrl}/users/me`, {
-    method: 'GET',
-    headers: config.headers,
-  }).then(checkRes);
-};
-
-// const likeCounter = () => {
-//   return fetch('https://nomoreparties.co/v1/wff-cohort-19/cards/likes/cards', {
-//     method: 'PUT',
-//     headers: {
-//       authorization: 'b1fc73a0-b339-4f23-8bc6-4511c8e7234e',
-//     },
-//   })
-//     .then(checkRes)
-//     .then((data) => {
-//       console.log(data);
-//     });
-// };
-// likeCounter();
-
-// GET массива карточек
-const getCards = () => {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: 'GET',
-    headers: config.headers,
-  }).then(checkRes);
+  openPopup(popupImage, false);
 };
 
 // Рендер профиля и карточек
@@ -80,13 +22,26 @@ Promise.all([getUserInfo(), getCards()])
     nameInput.value = user.name;
     jobInput.value = user.about;
 
+    const container = document.createDocumentFragment();
+
     cards.forEach((cardData) => {
-      const card = createCard(cardData, deleteCard, likeCard, openPopupImage, userId);
-      cardPlace.append(card);
+      const card = createCard(cardData, deleteCard, likeCard, openPopupImage, userId, cardId);
+      const deleteButton = card.querySelector('.card__delete-button');
+
+      const cardId = cardData._id;
+
+      if (cardData.owner._id !== user._id) {
+        deleteButton.style.cssText = 'display: none';
+      }
+
+      container.append(card);
     });
+
+    cardPlace.append(container);
 
     profileTitle.textContent = user.name;
     profileDescription.textContent = user.about;
+    editAvatarButton.style.cssText = `background-image: url("${user.avatar}");`;
   })
   .catch((err) => {
     alert(err);
@@ -123,6 +78,24 @@ const editProfileButton = mainContent.querySelector('.profile__edit-button');
 const addCardButton = mainContent.querySelector('.profile__add-button');
 const editAvatarButton = mainContent.querySelector('.profile__image');
 
+// Наведение на аватар
+editAvatarButton.addEventListener('mouseover', profileImageHover);
+
+function profileImageHover(evt) {
+  evt.stopPropagation();
+
+  const profileImageOverlay = mainContent.querySelector('.profile__image-overlay');
+  const profileImageSvg = mainContent.querySelector('.profile__image-svg');
+
+  profileImageOverlay.style.cssText = 'opacity: 1';
+  profileImageSvg.style.cssText = 'opacity: 1';
+
+  editAvatarButton.addEventListener('mouseout', () => {
+    profileImageOverlay.style.cssText = 'opacity: 0';
+    profileImageSvg.style.cssText = 'opacity: 0';
+  });
+}
+
 //Слушатели модалок
 editProfileButton.addEventListener('click', () => {
   openPopup(popupEditProfile);
@@ -145,7 +118,7 @@ popupImage.addEventListener('click', closePopupByOverlay);
 
 // Формы
 const formEditProfile = document.forms['edit-profile'];
-const formAddCard = document.forms['new-place'];
+export const formAddCard = document.forms['new-place'];
 const formEditAvatar = document.forms['edit-avatar'];
 
 // Слушатели форм
@@ -158,11 +131,10 @@ const jobInput = formEditProfile.elements.description;
 const profileTitle = mainContent.querySelector('.profile__title');
 const profileDescription = mainContent.querySelector('.profile__description');
 
-const fetchWrapper = (path, config) => {
-  return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...config });
+const fetchWrapper = (path, requestConfig) => {
+  return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...requestConfig });
 };
-
-const newSaveUserInfo = (nameData, aboutData) => {
+const SaveUserInfo = (nameData, aboutData) => {
   fetchWrapper(`/users/me`, {
     method: 'PATCH',
     body: JSON.stringify({
@@ -190,22 +162,12 @@ function editProfileSubmit(evt) {
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
 
-  newSaveUserInfo(profileTitle.textContent, profileDescription.textContent);
+  SaveUserInfo(profileTitle.textContent, profileDescription.textContent);
 
   closePopup(popupEditProfile);
 }
 
 // Пост новой карточки
-const postCard = (cardData) => {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: cardData.name,
-      link: cardData.link,
-    }),
-    headers: config.headers,
-  }).then(checkRes);
-};
 
 function addCardSubmit(evt) {
   evt.preventDefault();
@@ -216,6 +178,7 @@ function addCardSubmit(evt) {
   const cardData = {
     name: titleInput.value,
     link: linkInput.value,
+    likes: '',
   };
 
   postCard(cardData);
@@ -228,20 +191,6 @@ function addCardSubmit(evt) {
   formAddCard.reset();
   clearValidation(popupNewCard, validationConfig);
 }
-
-const saveNewAvatar = (url) => {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      avatar: url,
-    }),
-    headers: config.headers,
-  })
-    .then(checkRes)
-    .then((data) => {
-      console.log(data);
-    });
-};
 
 function editAvatarSubmit(evt) {
   evt.preventDefault();

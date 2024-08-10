@@ -20,7 +20,19 @@
         <section class="profile page__section">
           <div
             class="profile__image"
-            style="background-image: url('<%=require('./images/avatar.jpg')%>')"></div>
+            style="background-image: url('<%=require('./images/avatar.jpg')%>')">
+            <div class="profile__image-overlay"></div>
+            <svg
+              class="profile__image-svg"
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              fill="none">
+              <path
+                fill="#fff"
+                d="M26 3.454 6.77 22.794 3.336 19.29 22.517 0 26 3.454ZM0 26l5.102-1.53-3.581-3.453L0 26Z" />
+            </svg>
+          </div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
             <button class="profile__edit-button" type="button"></button>
@@ -133,7 +145,10 @@
         <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
-          <button type="button" class="card__like-button"></button>
+          <div class="card__button_counter_group">
+            <button type="button" class="card__like-button"></button>
+            <div class="card__like-counter"></div>
+          </div>
         </div>
       </li>
     </template>

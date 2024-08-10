@@ -1,0 +1,5 @@
+.card__button_counter_group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
