@@ -2,7 +2,14 @@ import './index.css';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import { getUserInfo, getCards, config, postCard, saveNewAvatar } from './components/api';
+import {
+  getUserInfo,
+  getCards,
+  config,
+  postCard,
+  saveNewAvatar,
+  saveUserInfo,
+} from './components/api';
 
 const mainContent = document.querySelector('.content');
 const cardPlace = mainContent.querySelector('.places__list');
@@ -21,14 +28,15 @@ Promise.all([getUserInfo(), getCards()])
     const userId = user._id;
     nameInput.value = user.name;
     jobInput.value = user.about;
-
+    console.log(cards[0]._id, 'первая карточка');
     const container = document.createDocumentFragment();
 
     cards.forEach((cardData) => {
-      const card = createCard(cardData, deleteCard, likeCard, openPopupImage, userId, cardId);
-      const deleteButton = card.querySelector('.card__delete-button');
-
       const cardId = cardData._id;
+      // console.log(cardId, 'cardData');
+      const card = createCard(cardData, deleteCard, likeCard, openPopupImage, cardId, userId);
+
+      const deleteButton = card.querySelector('.card__delete-button');
 
       if (cardData.owner._id !== user._id) {
         deleteButton.style.cssText = 'display: none';
@@ -131,24 +139,12 @@ const jobInput = formEditProfile.elements.description;
 const profileTitle = mainContent.querySelector('.profile__title');
 const profileDescription = mainContent.querySelector('.profile__description');
 
-const fetchWrapper = (path, requestConfig) => {
-  return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...requestConfig });
-};
-const SaveUserInfo = (nameData, aboutData) => {
-  fetchWrapper(`/users/me`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      name: nameData,
-      about: aboutData,
-    }),
-  }).then(checkRes);
-};
-
-// Сохранение изменений в профиле
-// const saveUserInfo = (nameData, aboutData) => {
-//   fetch(`${config.baseUrl}/users/me`, {
+// const fetchWrapper = (path, requestConfig) => {
+//   return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...requestConfig });
+// };
+// const SaveUserInfo = (nameData, aboutData) => {
+//   fetchWrapper(`/users/me`, {
 //     method: 'PATCH',
-//     headers: config.headers,
 //     body: JSON.stringify({
 //       name: nameData,
 //       about: aboutData,
@@ -162,12 +158,10 @@ function editProfileSubmit(evt) {
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
 
-  SaveUserInfo(profileTitle.textContent, profileDescription.textContent);
+  saveUserInfo(profileTitle.textContent, profileDescription.textContent);
 
   closePopup(popupEditProfile);
 }
-
-// Пост новой карточки
 
 function addCardSubmit(evt) {
   evt.preventDefault();

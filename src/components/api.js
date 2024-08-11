@@ -39,14 +39,40 @@ const postCard = (cardData) => {
   }).then(checkRes);
 };
 
+function renderLoading(isLoading) {
+  const button = document.querySelector('.button');
+  if (isLoading) {
+    button.textContent = 'Сохранение...';
+  } else {
+    button.textContent = 'Сохранить';
+  }
+}
+
 const saveNewAvatar = (url) => {
+  renderLoading(true);
+  console.log(button.textContent);
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     body: JSON.stringify({
       avatar: url,
     }),
     headers: config.headers,
+  })
+    .then(checkRes)
+    .finally(() => {
+      renderLoading(false);
+    });
+};
+
+const saveUserInfo = (nameData, aboutData) => {
+  fetch(`${config.baseUrl}/users/me`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: nameData,
+      about: aboutData,
+    }),
   }).then(checkRes);
 };
 
-export { getUserInfo, getCards, config, checkRes, postCard, saveNewAvatar };
+export { getUserInfo, getCards, config, checkRes, postCard, saveNewAvatar, saveUserInfo };
