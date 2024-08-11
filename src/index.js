@@ -2,14 +2,7 @@ import './index.css';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, closePopupByOverlay } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import {
-  getUserInfo,
-  getCards,
-  config,
-  postCard,
-  saveNewAvatar,
-  saveUserInfo,
-} from './components/api';
+import { getUserInfo, getCards, postCard, saveNewAvatar, saveUserInfo } from './components/api';
 
 const mainContent = document.querySelector('.content');
 const cardPlace = mainContent.querySelector('.places__list');
@@ -26,14 +19,14 @@ const openPopupImage = (imageLink, titleText) => {
 Promise.all([getUserInfo(), getCards()])
   .then(([user, cards]) => {
     const userId = user._id;
+
     nameInput.value = user.name;
     jobInput.value = user.about;
-    console.log(cards[0]._id, 'первая карточка');
+
     const container = document.createDocumentFragment();
 
     cards.forEach((cardData) => {
       const cardId = cardData._id;
-      // console.log(cardId, 'cardData');
       const card = createCard(cardData, deleteCard, likeCard, openPopupImage, cardId, userId);
 
       const deleteButton = card.querySelector('.card__delete-button');
@@ -54,19 +47,6 @@ Promise.all([getUserInfo(), getCards()])
   .catch((err) => {
     alert(err);
   });
-
-// function renderCards() {
-//   const container = document.createDocumentFragment();
-
-//   initialCards.forEach((element) => {
-//     const card = createCard(element, deleteCard, likeCard, openPopupImage);
-//     container.append(card);
-//   });
-
-//   cardPlace.append(container);
-// }
-
-// renderCards();
 
 // Модалки
 const popupEditProfile = document.querySelector('.popup_type_edit');
@@ -139,19 +119,6 @@ const jobInput = formEditProfile.elements.description;
 const profileTitle = mainContent.querySelector('.profile__title');
 const profileDescription = mainContent.querySelector('.profile__description');
 
-// const fetchWrapper = (path, requestConfig) => {
-//   return fetch(`${config.baseUrl}${path}`, { headers: config.headers, ...requestConfig });
-// };
-// const SaveUserInfo = (nameData, aboutData) => {
-//   fetchWrapper(`/users/me`, {
-//     method: 'PATCH',
-//     body: JSON.stringify({
-//       name: nameData,
-//       about: aboutData,
-//     }),
-//   }).then(checkRes);
-// };
-
 function editProfileSubmit(evt) {
   evt.preventDefault();
 
@@ -175,17 +142,16 @@ function addCardSubmit(evt) {
     likes: '',
   };
 
-  postCard(cardData);
+  postCard(cardData).then((res) => {
+    const newcardId = res._id;
 
-  const newCard = createCard(cardData, deleteCard, likeCard, openPopupImage);
-
-  cardPlace.prepend(newCard);
-
-  closePopup(popupNewCard);
-  formAddCard.reset();
-  clearValidation(popupNewCard, validationConfig);
+    const newCard = createCard(cardData, deleteCard, likeCard, openPopupImage, newcardId);
+    cardPlace.prepend(newCard);
+    closePopup(popupNewCard);
+    formAddCard.reset();
+    clearValidation(popupNewCard, validationConfig);
+  });
 }
-
 function editAvatarSubmit(evt) {
   evt.preventDefault();
 

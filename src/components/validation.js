@@ -1,4 +1,3 @@
-// Открытие ошибки
 const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
@@ -9,7 +8,6 @@ const showInputError = (formElement, inputElement, errorMessage, validationConfi
   errorElement.textContent = errorMessage;
 };
 
-// Закрытие ошибки
 const hideInputError = (formElement, inputElement, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
@@ -19,7 +17,6 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
   errorElement.textContent = '';
 };
 
-// Проверка валидности
 const checkInputValidity = (formElement, inputElement, validationConfig) => {
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
@@ -34,7 +31,6 @@ const checkInputValidity = (formElement, inputElement, validationConfig) => {
   }
 };
 
-// Слушатели всех инпутов
 const setEventListeners = (formElement, validationConfig) => {
   const inputs = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
   const submitButtonElement = formElement.querySelector(validationConfig.submitButtonSelector);
@@ -48,7 +44,6 @@ const setEventListeners = (formElement, validationConfig) => {
   toggleButtonState(inputs, submitButtonElement, validationConfig);
 };
 
-// Тоггл кнопки
 const toggleButtonState = (inputs, buttonElement, validationConfig) => {
   if (hasInvalidInput(inputs)) {
     buttonElement.disabled = true;
@@ -59,19 +54,16 @@ const toggleButtonState = (inputs, buttonElement, validationConfig) => {
   }
 };
 
-// Серч невалидных полей
 const hasInvalidInput = (inputs) => {
   return inputs.some((inputElement) => {
     return !inputElement.validity.valid;
   });
 };
 
-// Валидация форм
 export function enableValidation(validationConfig) {
   const forms = Array.from(document.querySelectorAll(validationConfig.formSelector));
 
   forms.forEach((form) => {
-    // Слушатели сабмита
     form.addEventListener('submit', (evt) => {
       evt.preventDefault();
     });
@@ -79,7 +71,6 @@ export function enableValidation(validationConfig) {
   });
 }
 
-// Очистка ошибок
 export function clearValidation(formElement, validationConfig) {
   const inputs = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
 

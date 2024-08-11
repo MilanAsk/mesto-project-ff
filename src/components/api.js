@@ -75,4 +75,40 @@ const saveUserInfo = (nameData, aboutData) => {
   }).then(checkRes);
 };
 
-export { getUserInfo, getCards, config, checkRes, postCard, saveNewAvatar, saveUserInfo };
+function handleLike(evt, card, id) {
+  const likeCounter = card.querySelector('.card__like-counter');
+
+  if (!evt.target.classList.contains('card__like-button_is-active')) {
+    evt.target.classList.add('card__like-button_is-active');
+    fetch(`${config.baseUrl}/cards/likes/${id}`, {
+      method: 'PUT',
+      headers: config.headers,
+    })
+      .then(checkRes)
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+      });
+  } else {
+    evt.target.classList.remove('card__like-button_is-active');
+
+    fetch(`${config.baseUrl}/cards/likes/${id}`, {
+      method: 'DELETE',
+      headers: config.headers,
+    })
+      .then(checkRes)
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+      });
+  }
+}
+
+export {
+  getUserInfo,
+  getCards,
+  config,
+  checkRes,
+  postCard,
+  saveNewAvatar,
+  saveUserInfo,
+  handleLike,
+};
