@@ -39,33 +39,18 @@ const postCard = (cardData) => {
   }).then(checkRes);
 };
 
-function renderLoading(isLoading) {
-  const button = document.querySelector('.button');
-  if (isLoading) {
-    button.textContent = 'Сохранение...';
-  } else {
-    button.textContent = 'Сохранить';
-  }
-}
-
 const saveNewAvatar = (url) => {
-  renderLoading(true);
-  console.log(button.textContent);
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     body: JSON.stringify({
       avatar: url,
     }),
     headers: config.headers,
-  })
-    .then(checkRes)
-    .finally(() => {
-      renderLoading(false);
-    });
+  }).then(checkRes);
 };
 
 const saveUserInfo = (nameData, aboutData) => {
-  fetch(`${config.baseUrl}/users/me`, {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
@@ -75,31 +60,25 @@ const saveUserInfo = (nameData, aboutData) => {
   }).then(checkRes);
 };
 
-function handleLike(evt, card, id) {
-  const likeCounter = card.querySelector('.card__like-counter');
+function putLike(id) {
+  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+    method: 'PUT',
+    headers: config.headers,
+  }).then(checkRes);
+}
 
-  if (!evt.target.classList.contains('card__like-button_is-active')) {
-    evt.target.classList.add('card__like-button_is-active');
-    fetch(`${config.baseUrl}/cards/likes/${id}`, {
-      method: 'PUT',
-      headers: config.headers,
-    })
-      .then(checkRes)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-      });
-  } else {
-    evt.target.classList.remove('card__like-button_is-active');
+function deleteLike(id) {
+  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  }).then(checkRes);
+}
 
-    fetch(`${config.baseUrl}/cards/likes/${id}`, {
-      method: 'DELETE',
-      headers: config.headers,
-    })
-      .then(checkRes)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-      });
-  }
+function deleteCardOnServer(id) {
+  return fetch(`${config.baseUrl}/cards/${id}`, {
+    method: 'DELETE',
+    headers: config.headers,
+  }).then(checkRes);
 }
 
 export {
@@ -110,5 +89,7 @@ export {
   postCard,
   saveNewAvatar,
   saveUserInfo,
-  handleLike,
+  putLike,
+  deleteLike,
+  deleteCardOnServer,
 };

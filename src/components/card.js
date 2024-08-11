@@ -1,20 +1,42 @@
-import { config, handleLike } from './api';
+import { deleteCardOnServer, putLike, deleteLike } from './api';
 
 function deleteCard(evt, id) {
   evt.stopPropagation();
-
-  return fetch(`${config.baseUrl}/cards/${id}`, {
-    method: 'DELETE',
-    headers: config.headers,
-  }).then(() => {
-    evt.target.closest('.card').remove();
-  });
+  deleteCardOnServer(id)
+    .then(() => {
+      evt.target.closest('.card').remove();
+    })
+    .catch((err) => {
+      console.log('Произошла ошибка:', err);
+    });
 }
 
 function likeCard(evt, id) {
   evt.stopPropagation();
+
   const card = evt.target.closest('.card');
-  handleLike(evt, card, id);
+  const likeCounter = card.querySelector('.card__like-counter');
+
+  // handleLike(evt, card, id);
+  if (!evt.target.classList.contains('card__like-button_is-active')) {
+    putLike(id)
+      .then((data) => {
+        evt.target.classList.add('card__like-button_is-active');
+        likeCounter.textContent = data.likes.length;
+      })
+      .catch((err) => {
+        console.log('Произошла ошибка:', err);
+      });
+  } else {
+    deleteLike(id)
+      .then((data) => {
+        evt.target.classList.remove('card__like-button_is-active');
+        likeCounter.textContent = data.likes.length;
+      })
+      .catch((err) => {
+        console.log('Произошла ошибка:', err);
+      });
+  }
 }
 
 function addCardEvents(
@@ -37,12 +59,14 @@ function addCardEvents(
     openPopupImage(imageLink, titleText);
   });
 }
-function createCard(cardData, deleteCard, likeCard, openPopupImage, cardId) {
+function createCard(cardData, deleteCard, likeCard, openPopupImage, cardId, ownerId, userId) {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardNode = cardTemplate.querySelector('.places__item.card').cloneNode(true);
   const titleNode = cardNode.querySelector('.card__title');
   const cardImage = cardNode.querySelector('.card__image');
   const likeCounter = cardNode.querySelector('.card__like-counter');
+  const deleteButton = cardNode.querySelector('.card__delete-button');
+
   const titleText = cardData.name;
   const imageLink = cardData.link;
   const cardLikes = cardData.likes.length;
@@ -51,6 +75,10 @@ function createCard(cardData, deleteCard, likeCard, openPopupImage, cardId) {
   cardImage.src = imageLink;
   cardImage.alt = titleText;
   likeCounter.textContent = cardLikes;
+
+  if (ownerId !== userId) {
+    deleteButton.style.cssText = 'display: none';
+  }
 
   addCardEvents(
     cardNode,

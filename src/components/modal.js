@@ -1,6 +1,3 @@
-import { clearValidation } from './validation';
-import { validationConfig, formAddCard } from '../index';
-
 const keyClose = (evt) => {
   if (evt.key === 'Escape') {
     const openedPopup = document.querySelector('.popup_is-opened');
@@ -8,18 +5,15 @@ const keyClose = (evt) => {
   }
 };
 
-function openPopup(popup, withValidation = true) {
+function openPopup(popup) {
   popup.classList.add('popup_is-opened');
 
   document.addEventListener('keydown', keyClose);
-
-  withValidation && clearValidation(popup, validationConfig);
 }
 
 function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
 
-  formAddCard.reset();
   document.removeEventListener('keydown', keyClose);
 }
 
