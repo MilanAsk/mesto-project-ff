@@ -1,4 +1,4 @@
-const keyClose = (evt) => {
+const closeKey = (evt) => {
   if (evt.key === 'Escape') {
     const openedPopup = document.querySelector('.popup_is-opened');
     closePopup(openedPopup);
@@ -8,13 +8,13 @@ const keyClose = (evt) => {
 function openPopup(popup) {
   popup.classList.add('popup_is-opened');
 
-  document.addEventListener('keydown', keyClose);
+  document.addEventListener('keydown', closeKey);
 }
 
 function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
 
-  document.removeEventListener('keydown', keyClose);
+  document.removeEventListener('keydown', closeKey);
 }
 
 const closePopupByOverlay = (evt) => {
@@ -22,4 +22,4 @@ const closePopupByOverlay = (evt) => {
     closePopup(evt.currentTarget);
   }
 };
-export { keyClose, openPopup, closePopup, closePopupByOverlay };
+export { openPopup, closePopup, closePopupByOverlay };
